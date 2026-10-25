@@ -1,5 +1,11 @@
 # Firefox Browsing History Analysis | SQLite Forensics
 
+## Challenge Overview
+
+<img src="images/01-challenge-questions.png" alt="Browsing forensics challenge questions" width="680">
+
+*Ref 1: The forensic challenge asked investigators to examine an intern's browser history.*
+
 ## Objective
 
 Analyze an exported Firefox browser history database to reconstruct a user's browsing activity, identify cryptocurrency-mining research, examine visited domains and search queries, and establish an activity timeline. The investigation used Linux terminal commands and SQL queries against `places.sqlite`.
@@ -33,7 +39,7 @@ ls -la
 sqlite3 places.sqlite
 ```
 
-<img src="images/01-locate-database.png" alt="Terminal listing showing places.sqlite" width="680">
+<img src="images/02-locate-database.png" alt="Terminal listing showing places.sqlite" width="680">
 
 *Ref 1: The exported Firefox history database was identified in the working directory.*
 
@@ -48,7 +54,7 @@ After opening the file with `sqlite3`, the `.tables` command listed its tables. 
 .quit
 ```
 
-<img src="images/02-sqlite-tables.png" alt="SQLite output listing Firefox browser history tables" width="680">
+<img src="images/03-sqlite-tables.png" alt="SQLite output listing Firefox browser history tables" width="680">
 
 *Ref 2: The SQLite database contained the Firefox history and origin tables used in the analysis.*
 
@@ -61,6 +67,10 @@ The history table was joined to the URL table to display visited URLs in chronol
 ```bash
 sqlite3 -header -column places.sqlite "SELECT datetime(h.visit_date/1000000, 'unixepoch') AS visit_time, p.url FROM moz_historyvisits h JOIN moz_places p ON h.place_id = p.id ORDER BY h.visit_date ASC LIMIT 20;"
 ```
+
+<img src="images/04-chronological-history.png" alt="Chronological Firefox browsing history URLs and timestamps" width="680">
+
+*Ref 4: Chronological browser visits show the first search and subsequent cryptocurrency-mining research.*
 
 The earliest recorded visit was **August 11, 2026, at 14:31:29 UTC**. Its Google search query was **`monero`**.
 
@@ -127,7 +137,7 @@ The `moz_origins` table exposed the hostnames associated with records in Firefox
 sqlite3 -header -column places.sqlite "SELECT DISTINCT host FROM moz_origins ORDER BY host;"
 ```
 
-<img src="images/03-investigation-results.png" alt="Terminal showing time calculations, search queries and Firefox origin hostnames" width="680">
+<img src="images/05-final-queries.png" alt="Terminal showing time calculations, search queries and Firefox origin hostnames" width="680">
 
 *Ref 3: SQLite queries identified the activity window, recent searches, and hostnames stored in the database.*
 
