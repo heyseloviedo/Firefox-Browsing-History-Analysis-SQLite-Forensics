@@ -133,7 +133,7 @@ sqlite3 -header -column places.sqlite "SELECT DISTINCT host FROM moz_origins ORD
 
 The output included nine hosts, among them `support.awesomeminer.com` and `www.awesomeminer.com`, which share one base domain, as well as `support.mozilla.org` and `www.mozilla.org`, which also share a base domain.
 
-**Important distinction:** The `moz_origins` table can contain stored origins beyond the visited entries in `moz_historyvisits`. A count of **7 distinct base domains from all stored origins was rejected by the challenge**, so it should not be presented as the confirmed visited-domain count. A visit-scoped query is needed to establish the challenge's intended answer:
+**Important distinction:** The `moz_origins` table can contain stored origins beyond the visited entries in `moz_historyvisits`. Counting all stored origins produced **7 base domains**, but the challenge's confirmed answer was **6 unique base domains visited**. This demonstrates why stored origins should not automatically be treated as actual visits. A visit-scoped query helps distinguish the two:
 
 ```sql
 SELECT DISTINCT o.host
